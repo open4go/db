@@ -42,7 +42,6 @@ func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) 
 		return client, nil
 	}
 	uri := host + name
-	log.Log().WithField("uri", uri).Info("before connect ..")
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
 		log.Log().Fatal(err)
@@ -65,8 +64,6 @@ func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) 
 		} else {
 			log.Log().Fatal("handler is nil")
 		}
-		log.Log().WithField("db", name).WithField("handlers", p.Handler).
-			Info("init success")
 	}
 	return client, nil
 }
