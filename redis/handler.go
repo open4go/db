@@ -37,17 +37,17 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 	// 如果没有添加斜线，则为其加上
 	// 便于后续步骤添加数据库名称
 	if !strings.HasSuffix(host, "/") {
-		host = host + "/"
+		host = strings.Trim(host, "/")
 	}
 
-	client, ok := p.clients[host+name]
+	client, ok := p.clients[host]
 	if ok {
 		// client has been init, no need to connect again
 		return client, nil
 	}
-	uri := host + name
+	uri := host
 	client = v9.NewClient(&v9.Options{
-		Addr:       host,
+		Addr:       uri,
 		DB:         db,
 		PoolSize:   100,
 		MaxRetries: 3,
