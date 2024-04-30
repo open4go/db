@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/open4go/log"
 	v9 "github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
 	"strings"
 	"sync"
 )
@@ -15,7 +14,6 @@ var DBPool *DataBasePool
 type DataBasePool struct {
 	mu      sync.Mutex
 	clients map[string]*v9.Client
-	Handler map[string]*mongo.Database
 }
 
 func NewDataBasePool() {
@@ -79,8 +77,8 @@ func (p *DataBasePool) CloseAll() {
 	}
 }
 
-func (p *DataBasePool) GetHandler(name string) (*mongo.Database, error) {
-	if handler, ok := p.Handler[name]; ok {
+func (p *DataBasePool) GetHandler(name string) (*v9.Client, error) {
+	if handler, ok := p.clients[name]; ok {
 		return handler, nil
 	}
 	return nil, errors.New("no found any handler")
