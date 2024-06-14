@@ -15,7 +15,7 @@ func Init(ctx context.Context) {
 	var services []MongoClientConf
 	err := viper.UnmarshalKey("db.mongo", &services)
 	if err != nil {
-		log.Log().WithField("err", "Error unmarshaling services").
+		log.Log(ctx).WithField("err", "Error unmarshaling services").
 			Fatal(err)
 		return
 	}
@@ -24,7 +24,7 @@ func Init(ctx context.Context) {
 	for _, i := range services {
 		_, err := DBPool.GetClient(ctx, i.Host, i.Name)
 		if err != nil {
-			log.Log().Fatal(err)
+			log.Log(ctx).Fatal(err)
 		}
 	}
 }

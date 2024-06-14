@@ -53,11 +53,11 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 
 	err := client.Ping(ctx).Err()
 	if err != nil {
-		log.Log().WithField("uri", uri).
+		log.Log(ctx).WithField("uri", uri).
 			Fatal("Failed to ping Redis server: %v", err)
 		// Handle error
 	} else {
-		log.Log().WithField("uri", uri).
+		log.Log(ctx).WithField("uri", uri).
 			Info("Redis server is reachable")
 		// MongoDB server is reachable, proceed with your logic
 		p.clients[name] = client
