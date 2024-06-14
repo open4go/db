@@ -16,6 +16,7 @@ type DataBasePool struct {
 	mu      sync.Mutex
 	clients map[string]*mongo.Client
 	Handler map[string]*mongo.Database
+	ctx     context.Context
 }
 
 func NewDataBasePool() {
@@ -27,6 +28,7 @@ func NewDataBasePool() {
 }
 
 func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) (*mongo.Client, error) {
+	p.ctx = ctx
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -44,17 +46,17 @@ func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) 
 	uri := host + name
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {
-		log.Log().Fatal(err)
+		log.Log(p.ctx).Fatal(err)
 		return nil, err
 	}
 
 	err = client.Ping(ctx, nil)
 	if err != nil {
-		log.Log().WithField("uri", uri).
+		log.Log(p.ctx).WithField("uri", uri).
 			Fatal("Failed to ping MongoDB server: %v", err)
 		// Handle error
 	} else {
-		log.Log().WithField("uri", uri).
+		log.Log(p.ctx).WithField("uri", uri).
 			Info("MongoDB server is reachable")
 		// MongoDB server is reachable, proceed with your logic
 		p.clients[host+name] = client
@@ -62,7 +64,7 @@ func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) 
 		if handler != nil {
 			p.Handler[name] = handler
 		} else {
-			log.Log().Fatal("handler is nil")
+			log.Log(p.ctx).Fatal("handler is nil")
 		}
 	}
 	return client, nil
