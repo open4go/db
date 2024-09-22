@@ -2,29 +2,26 @@ package mongo
 
 import (
 	"context"
-	"github.com/open4go/log"
 	"github.com/spf13/viper"
 )
 
 // Init 快速执行初始化
-func Init(ctx context.Context) {
-	// 初始化 MongoDB 连接池
-	NewDataBasePool()
-
-	// 解析 YAML 数据到结构体数组
-	var services []MongoClientConf
-	err := viper.UnmarshalKey("db.mongo", &services)
+func Init(ctx context.Context) error {
+	dbPool, err := NewDataBasePool(ctx)
 	if err != nil {
-		log.Log(ctx).WithField("err", "Error unmarshaling services").
-			Fatal(err)
-		return
+		return err // 返回错误，由调用者决定如何处理
 	}
 
-	// 初始化所有数据库
-	for _, i := range services {
-		_, err := DBPool.GetClient(ctx, i.Host, i.Name)
-		if err != nil {
-			log.Log(ctx).Fatal(err)
+	var services []MongoClientConf
+	if err := viper.UnmarshalKey("db.mongo", &services); err != nil {
+		return err // 处理配置解析错误
+	}
+
+	for _, service := range services {
+		if _, err := dbPool.GetClient(ctx, service.Host, service.Name); err != nil {
+			return err // 返回错误，由调用者决定如何处理
 		}
 	}
+
+	return nil // 成功初始化
 }

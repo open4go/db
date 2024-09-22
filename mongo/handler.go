@@ -16,11 +16,12 @@ type DataBasePool struct {
 	handler map[string]*mongo.Database
 }
 
-func NewDataBasePool() *DataBasePool {
+func NewDataBasePool(ctx context.Context) (*DataBasePool, error) {
+	// 创建一个新的数据库连接池
 	return &DataBasePool{
 		clients: make(map[string]*mongo.Client),
 		handler: make(map[string]*mongo.Database),
-	}
+	}, nil
 }
 
 func (p *DataBasePool) GetClient(ctx context.Context, host string, name string) (*mongo.Client, error) {
