@@ -7,10 +7,7 @@ import (
 
 // Init 快速执行初始化
 func Init(ctx context.Context) error {
-	dbPool, err := NewDataBasePool(ctx)
-	if err != nil {
-		return err // 返回错误，由调用者决定如何处理
-	}
+	DBPool = NewDataBasePool(ctx)
 
 	var services []MongoClientConf
 	if err := viper.UnmarshalKey("db.mongo", &services); err != nil {
@@ -18,7 +15,7 @@ func Init(ctx context.Context) error {
 	}
 
 	for _, service := range services {
-		if _, err := dbPool.GetClient(ctx, service.Host, service.Name); err != nil {
+		if _, err := DBPool.GetClient(ctx, service.Host, service.Name); err != nil {
 			return err // 返回错误，由调用者决定如何处理
 		}
 	}
