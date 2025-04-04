@@ -54,7 +54,7 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 	err := client.Ping(ctx).Err()
 	if err != nil {
 		log.Log(ctx).WithField("uri", uri).
-			Fatal("Failed to ping Redis server: %v", err)
+			Fatal(err)
 		// Handle error
 	} else {
 		log.Log(ctx).WithField("uri", uri).
