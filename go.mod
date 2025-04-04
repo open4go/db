@@ -1,10 +1,12 @@
 module github.com/open4go/db
 
-go 1.21.5
+go 1.24
+
+toolchain go1.24.0
 
 require (
 	github.com/open4go/log v0.0.12
-	github.com/redis/go-redis/v9 v9.0.3
+	github.com/redis/go-redis/v9 v9.7.3
 	github.com/spf13/viper v1.12.0
 	go.mongodb.org/mongo-driver v1.15.0
 )
