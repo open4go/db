@@ -1,8 +1,6 @@
 module github.com/open4go/db
 
-go 1.24
-
-toolchain go1.24.0
+go 1.25.8
 
 require (
 	github.com/open4go/log v0.0.12
