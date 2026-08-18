@@ -38,13 +38,11 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 		host = strings.Trim(host, "/")
 	}
 
-	client, ok := p.clients[host]
-	if ok {
-		// client has been init, no need to connect again
+	if client, ok := p.clients[name]; ok {
 		return client, nil
 	}
 	uri := host
-	client = v9.NewClient(&v9.Options{
+	client := v9.NewClient(&v9.Options{
 		Addr:       uri,
 		DB:         db,
 		PoolSize:   100,
@@ -53,15 +51,12 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 
 	err := client.Ping(ctx).Err()
 	if err != nil {
-		log.Log(ctx).WithField("uri", uri).
-			Fatal(err)
-		// Handle error
-	} else {
-		log.Log(ctx).WithField("uri", uri).
-			Info("Redis server is reachable")
-		// MongoDB server is reachable, proceed with your logic
-		p.clients[name] = client
+		log.Log(ctx).WithField("uri", uri).WithField("name", name).Error(err)
+		_ = client.Close()
+		return nil, err
 	}
+	log.Log(ctx).WithField("uri", uri).WithField("name", name).Info("Redis server is reachable")
+	p.clients[name] = client
 	return client, nil
 }
 
