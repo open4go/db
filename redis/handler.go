@@ -20,7 +20,6 @@ func NewDataBasePool() {
 	DBPool = &DataBasePool{
 		clients: make(map[string]*v9.Client),
 	}
-	return
 }
 
 // GetClient
