@@ -28,6 +28,12 @@ func NewDataBasePool() {
 // db: 0, 2, 3, 4
 func (p *DataBasePool) GetClient(ctx context.Context,
 	host string, name string, db int) (*v9.Client, error) {
+	return p.GetClientWithPassword(ctx, host, name, db, "")
+}
+
+// GetClientWithPassword is GetClient with an optional AUTH password.
+func (p *DataBasePool) GetClientWithPassword(ctx context.Context,
+	host string, name string, db int, password string) (*v9.Client, error) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -43,6 +49,7 @@ func (p *DataBasePool) GetClient(ctx context.Context,
 	uri := host
 	client := v9.NewClient(&v9.Options{
 		Addr:       uri,
+		Password:   password,
 		DB:         db,
 		PoolSize:   100,
 		MaxRetries: 3,
