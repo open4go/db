@@ -22,7 +22,7 @@ func Init(ctx context.Context) {
 
 	// 初始化所有数据库
 	for _, i := range services {
-		_, err := DBPool.GetClient(ctx, i.Host, i.Name, i.DB)
+		_, err := DBPool.GetClientWithPassword(ctx, i.Host, i.Name, i.DB, i.Password)
 		if err != nil {
 			log.Log(ctx).Fatal(err)
 		}
